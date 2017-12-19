@@ -2,9 +2,10 @@
   "name": "lego-boost-experiment",
   "version": "1.0.0",
   "description": "node js interface to communicate with LEGO boost module",
-  "main": "index.mjs",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js"
   },
   "repository": {
     "type": "git",
