@@ -1,6 +1,9 @@
 # lego-boost-experiment
 > node js interface to communicate with LEGO boost module
 
+## Preview
+[![Alt text](https://img.youtube.com/vi/glZRpH6SsPM/0.jpg)](https://www.youtube.com/watch?v=glZRpH6SsPM)
+
 ## Pre-requisites
 ### Hardware
 1. Lego boost module :)
@@ -14,6 +17,10 @@
 1. Go to project root
 2. `npm install`
 3. `npm run start`
+
+## TODO:
+1. [ ] add in interesting movements?
+2. [ ] running the app from `Onion omega 2` - Ref: https://onion.io/omega2/
 
 ## Credits
 Credits to @hobbyquaker, for the awesome node package
