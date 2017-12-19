@@ -1,0 +1,27 @@
+{
+  "name": "lego-boost-experiment",
+  "version": "1.0.0",
+  "description": "node js interface to communicate with LEGO boost module",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kencanak/lego-boost-experiment.git"
+  },
+  "keywords": [
+    "lego",
+    "boost"
+  ],
+  "author": "Kencana Kesuma",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kencanak/lego-boost-experiment/issues"
+  },
+  "homepage": "https://github.com/kencanak/lego-boost-experiment#readme",
+  "dependencies": {
+    "movehub": "^0.3.2",
+    "chalk": "^2.3.0"
+  }
+}
