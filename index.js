@@ -101,8 +101,8 @@ class LegoBoostExperiment {
       setTimeout(() => {
 
 
-          this.connectedHub.motorAngle('D', 110, 100);
-          this.connectedHub.motorAngle('A', 90, -15);
+          // this.connectedHub.motorAngle('D', 110, 100);
+          // this.connectedHub.motorAngle('A', 90, -15);
           this.connectedHub.write('0f 00 81 39 11 0c 5a 00 00 00 0e f1 64 7f 03');
 
           this.connectedHub.write('0d 00 81 39 11 0a e8 03 9b 64 64 7f 03');
