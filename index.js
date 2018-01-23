@@ -29,6 +29,11 @@ class LegoBoostExperiment {
     this.taskList = [];
     this.currentTaskIndex = 0;
 
+    // firebase db related
+    this._db = null;
+    this._requestDBRef = null;
+    this._requestCompleteDBRef = null;
+
     // initialise ble listener event
     this._bindBLEEvents();
 
@@ -75,33 +80,46 @@ class LegoBoostExperiment {
     });
 
     this._db = firebaseAdmin.database();
-    this._dbRef = this._db.ref(appConfig.griftItDBCollection);
+    this._requestDBRef = this._db.ref(appConfig.griftItRequestDBCollection);
+    this._requestCompleteDBRef = this._db.ref(appConfig.griftItRequestCompleteDBCollection);
   }
 
   _attachDBListener() {
-    this._dbRef.on('child_added', (snapshot, prevChildKey) => {
-      console.log(snapshot, '-this is new data');
+    // let's grab the pending list
+    this._requestDBRef.once("value", (data) => {
+      const list = data.val();
+      Object.keys(list).forEach((key) => {
+        this.taskList.push({
+          id: key,
+          steps: list[key].steps
+        });
+      });
+    });
+
+    // let's update the task list on new request added
+    this._requestDBRef.on('child_added', (snapshot, prevChildKey) => {
       const doc = snapshot.val();
 
       this.taskList.push({
         id: snapshot.key,
-        steps: doc.steps,
-        isDone: doc.isDone
+        steps: doc.steps
       });
     }, function (errorObject) {
       this._logger(`Problem in reading data from firebase: ${errorObject}`, 'error');
     });
   }
 
-  _updateMoveTaskToDone(id) {
-    if (!id) {
-      this._logger('invalid doc id to update', 'error');
+  _updateMoveTaskToDone(doc) {
+    if (!doc) {
+      this._logger('_updateMoveTaskToDone: invalid doc', 'error');
       return;
     }
 
-    const doc = {};
-    doc[`${id}/isDone`] = true;
-    this._dbRef.update(doc);
+    // let's remove it from the request collection
+    this._requestDBRef.child(doc.id).remove();
+
+    // let's add the completed task into task complete collection
+    this._requestCompleteDBRef.push().set(doc);
   }
 
   _beginTaskQueue() {
@@ -156,7 +174,7 @@ class LegoBoostExperiment {
   _moveToNextTask(currentTask) {
     if (currentTask) {
       // update status of previous task
-      this._updateMoveTaskToDone(currentTask.id);
+      this._updateMoveTaskToDone(currentTask);
     }
 
     if (!this._isLastTask()) {
