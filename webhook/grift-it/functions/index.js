@@ -5,6 +5,7 @@ process.env.DEBUG = 'actions-on-google:*';
 const functions = require('firebase-functions');
 const firebaseAdmin = require('firebase-admin');
 const dialogflowApp = require('actions-on-google').DialogflowApp;
+const randomWords = require('random-words');
 
 const appConfig = require('./config');
 
@@ -13,6 +14,7 @@ firebaseAdmin.initializeApp(functions.config().firebase);
 
 const _databaseRef = firebaseAdmin.database().ref(appConfig.griftItRequestDBCollection);
 const _databasePriorityRef = firebaseAdmin.database().ref(appConfig.griftItPriorityDBCollection);
+const _databaseCommandRef = firebaseAdmin.database().ref(appConfig.griftItCommandDBCollection);
 
 const methods = {
   grifter: (request, response, app) => {
@@ -20,38 +22,71 @@ const methods = {
     // let userId = app.getUser().userId;
     const data = request.body.result.parameters;
 
+    const code = randomWords({
+      exactly: 3,
+      join: '-'
+    });
+
     // store request
-    // Add the user to DB
     _databaseRef.push().set({
-      steps: data.move.steps
+      steps: data.move.steps,
+      code: code
+    });
+
+    if (request.body.result.action === 'grift-it-busy-yes') {
+      const followUp = {
+        "followupEvent": {
+          "name": appConfig.intents.griftItQueueOk.intent,
+          "data": {
+            "code": code
+          }
+        }
+      };
+
+      response.send(followUp);
+    }
+  },
+  grifterStopCurrentTask: (request, response, app) => {
+    const updateObject = {};
+
+    updateObject[appConfig.fireDBCommandField.cancelCurrent] = true;
+
+    _databaseCommandRef.update(updateObject);
+
+    _databaseCommandRef.on('child_changed', (snapshot) => {
+      const changes = snapshot.val();
+
+      if (!changes) {
+        const followUp = {
+          "followupEvent": {
+            "name": appConfig.intents.griftItCurrentTaskStopped.intent
+          }
+        };
+
+        response.send(followUp);
+
+        _databaseCommandRef.off('child_changed');
+      }
     });
   },
-  grifterBusy: (request, response, app) => {
-    console.log('busy');
+  doNothing: (request, response, app) => {
+    console.log(`DO NOTHING: ${JSON.stringify(request.body)}`);
   },
   grifterSkipQueue: (request, response, app) => {
-    console.log('SKIP QUEUE');
-    console.log('PARAMS DATA: ' + JSON.stringify(request.body.result.parameters));
     const data = request.body.result.parameters;
 
-     // store request
-    // Add the user to DB
+    // store priority request
     _databasePriorityRef.push().set({
       steps: data.move.steps
     });
-
-    // app.tell('okay i am done with your request, toodles!');
-    // response.status(200).end('terminating web hook request');
   },
   unknownInput: (request, response, app) => {
-    console.log('call this unknown input method');
-    console.log(app.getRepromptCount() + '---');
     if (app.getRepromptCount() === 0) {
-      app.ask(`What was that?`);
+      app.ask('What was that?');
     } else if (app.getRepromptCount() === 1) {
-      app.ask(`Sorry I didn't catch that. Could you repeat yourself?`);
+      app.ask('Sorry I didn\'t catch that. Could you repeat yourself?');
     } else if (app.isFinalReprompt()) {
-      app.tell(`Okay let's try this again later.`);
+      app.tell('Okay let\'s try this again later.');
       response.status(200).end('terminating web hook request');
     }
   }
@@ -65,8 +100,6 @@ exports.griftItFulfillment = functions.https.onRequest((request, response) => {
   console.log(`Request headers: ${JSON.stringify(request.headers)}`);
   console.log(`Request body: ${JSON.stringify(request.body)}`);
 
-  console.log(`Response body: ${JSON.stringify(response.body)}`);
-
   const app = new dialogflowApp({
     request: request,
     response: response
@@ -77,48 +110,42 @@ exports.griftItFulfillment = functions.https.onRequest((request, response) => {
   Object.keys(appConfig.intents).forEach((intentKey) => {
     const intent = appConfig.intents[intentKey];
     actionMap.set(intent.intent, () => {
-      methods[intent.action](request, app);
+      methods[intent.action](request, response, app);
     });
   });
 
   // An action is a string used to identify what needs to be done in fulfillment
   let action = (request.body.result.action) ? request.body.result.action : 'default';
 
-  if (action === 'grift-it') {
-    _databaseRef.once('value', (data) => {
-      if (data.numChildren() > 0) {
-        console.log('I AM BUSY');
-        // if there are request not being processed yet, we assumed that it's busy
-        // so we are triggering follow up event
-        action = appConfig.intents.griftItBusy.intent;
-        const followUp = {
-          "followupEvent": {
-            "name": appConfig.intents.griftItBusy.intent,
-            "data": {
-              "steps": request.body.result.parameters.move.steps
+  switch (action) {
+    case 'grift-it':
+      _databaseRef.once('value', (data) => {
+        const totalTask = data.numChildren();
+        if (totalTask > 0) {
+          // if there are request not being processed yet, we assumed that it's busy
+          // so we are triggering follow up event
+          action = appConfig.intents.griftItBusy.intent;
+          const followUp = {
+            "followupEvent": {
+              "name": appConfig.intents.griftItBusy.intent,
+              "data": {
+                "queue_no": totalTask.toString()
+              }
             }
-          }
-        };
+          };
 
-        response.send(followUp);
-        return;
-      }
+          response.send(followUp);
+          return;
+        }
 
-      // if not busy, let's store the request
+        // if not busy, let's store the request
+        actionMap.get(action)();
+      });
+      break;
+
+    default:
       actionMap.get(action)();
-    });
-  } else if (request.body.result.parameters.move) {
-    if (action === 'grift-it-busy-yes') {
-      actionMap.get(action)();
-    } else if (action === 'grift-it-busy-no') {
-      console.log('NO QUEUEUE');
-      console.log(request.body.result.parameters.move);
-    } else if (action === 'grift-it-magic-word') {
-      console.log('MAGIC WORD IS');
-      console.log(app.getRepromptCount() + '---');
-      console.log(request.body.result.parameters.move);
-      actionMap.get(action)();
-    }
+      break;
   }
 });
 

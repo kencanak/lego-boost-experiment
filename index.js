@@ -34,6 +34,8 @@ class LegoBoostExperiment {
     this._requestDBRef = null;
     this._requestCompleteDBRef = null;
 
+    this._grifterCommandDBRef = null;
+
     // initialise ble listener event
     this._bindBLEEvents();
 
@@ -82,30 +84,51 @@ class LegoBoostExperiment {
     this._db = firebaseAdmin.database();
     this._requestDBRef = this._db.ref(appConfig.griftItRequestDBCollection);
     this._requestCompleteDBRef = this._db.ref(appConfig.griftItRequestCompleteDBCollection);
+    this._grifterCommandDBRef = this._db.ref(appConfig.griftItCommandDBCollection);
   }
 
   _attachDBListener() {
     // let's grab the pending list
     this._requestDBRef.once("value", (data) => {
       const list = data.val();
-      Object.keys(list).forEach((key) => {
-        this.taskList.push({
-          id: key,
-          steps: list[key].steps
+      if (list && Object.keys(list).length > 0) {
+        Object.keys(list).forEach((key) => {
+          this.taskList.push({
+            id: key,
+            steps: list[key].steps
+          });
         });
-      });
+      }
     });
 
     // let's update the task list on new request added
     this._requestDBRef.on('child_added', (snapshot, prevChildKey) => {
       const doc = snapshot.val();
 
+      console.log('child added');
+
       this.taskList.push({
         id: snapshot.key,
         steps: doc.steps
       });
-    }, function (errorObject) {
+    }, (errorObject) => {
       this._logger(`Problem in reading data from firebase: ${errorObject}`, 'error');
+    });
+
+    this._grifterCommandDBRef.on('child_changed', (snapshot) => {
+      const changes = snapshot.val();
+
+      console.log('CANCELLING: ' + JSON.stringify(changes))
+
+      if (changes) {
+        console.log('update');
+        const updateObject = {};
+        updateObject[appConfig.fireDBCommandField.cancelCurrent] = false;
+
+        console.log(updateObject);
+
+        this._grifterCommandDBRef.update(updateObject);
+      }
     });
   }
 
@@ -155,7 +178,9 @@ class LegoBoostExperiment {
     //   this._moveToNextTask(currentTask);
     // }, 1000);
 
-    this._moveToNextTask(currentTask);
+    setTimeout(() => {
+      this._moveToNextTask(currentTask);
+    }, 60000);
 
 
     //this.connectedHub.write('0e 00 81 39 11 0b 5a 00 00 00 0e 64 7f 03');

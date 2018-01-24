@@ -1,7 +1,11 @@
 module.exports = {
   griftItRequestDBCollection: 'grift-it-request',
   griftItPriorityDBCollection: 'grift-it-priority',
+  griftItCommandDBCollection: 'grift-it-command',
   griftItRequestCompleteDBCollection: 'grift-it-request-complete',
+  fireDBCommandField: {
+    cancelCurrent: 'cancel_current'
+  },
   intents: {
     griftIt: {
       intent: 'grift-it',
@@ -9,23 +13,27 @@ module.exports = {
     },
     griftItBusy: {
       intent: 'grift-it-busy',
-      action: 'grifterBusy'
+      action: 'doNothing'
     },
     griftItQueue: {
       intent: 'grift-it-busy-yes',
       action: 'grifter'
     },
-    griftItNoQueue: {
-      intent: 'grift-it-busy-no',
-      action: 'grifterBusy'
+    griftItQueueOk: {
+      intent: 'grift-it-queue-ok',
+      action: 'doNothing'
     },
     griftItMagic: {
       intent: 'grift-it-magic-word',
       action: 'grifterSkipQueue'
     },
-    // griftItUnknownInput: {
-    //   intent: 'grift-it-no-input',
-    //   action: 'noInput'
-    // }
+    griftItStopCurrentTask: {
+      intent: 'grift-it-stop-current-task',
+      action: 'grifterStopCurrentTask'
+    },
+    griftItCurrentTaskStopped: {
+      intent: 'grift-it-current-task-stopped',
+      action: 'doNothing'
+    }
   }
 };
