@@ -16,6 +16,13 @@ const _databaseRef = firebaseAdmin.database().ref(appConfig.griftItRequestDBColl
 const _databasePriorityRef = firebaseAdmin.database().ref(appConfig.griftItPriorityDBCollection);
 const _databaseCommandRef = firebaseAdmin.database().ref(appConfig.griftItCommandDBCollection);
 
+
+// _databaseRef.on('child_removed', () => {
+//   console.log('TASK DONE');
+//   // ref: https://github.com/dialogflow/dialogflow-nodejs-client
+//   // https://github.com/dialogflow/dialogflow-nodejs-client-v2
+// });
+
 const methods = {
   grifter: (request, response, app) => {
     // Get user ID from the Google Assistant through Action on Google
@@ -27,8 +34,10 @@ const methods = {
       join: '-'
     });
 
+    const pushRef = _databaseRef.push();
+
     // store request
-    _databaseRef.push().set({
+    pushRef.set({
       steps: data.move.steps,
       code: code
     });
