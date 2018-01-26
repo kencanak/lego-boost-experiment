@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/kencanak/lego-boost-experiment#readme",
   "dependencies": {
-    "movehub": "^0.3.2",
+    "actions-on-google": "^1.7.0",
     "chalk": "^2.3.0",
-    "noble": "git://github.com/jacobrosenthal/noble.git#highsierra"
+    "movehub": "^0.3.2",
+    "noble": "git://github.com/jacobrosenthal/noble.git#highsierra",
+    "firebase-admin": "^5.8.1"
   }
 }

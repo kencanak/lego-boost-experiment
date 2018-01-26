@@ -18,8 +18,20 @@
 2. `npm install`
 3. `npm run start`
 
+## Project idea
+1. build a step count simulator
+2. action should be triggered by VUI - using Google Assistant for now
+3. making use of firebase of real-time task list update
+4. add in push notification feature, to inform user whether or not task has been completed
+5. making use of distance sensor to detect if target object is in place
+
+## Project structure
+1. node server for communicating with Lego hub and firebase (for grabbing list of task to be done)
+2. Firebase function to support customization of Dialogflow intent
+
 ## TODO:
 1. [ ] add in interesting movements?
+2. [x] integration with dialogflow + firebase + actions on google, for communicating with the Lego Boost hub
 2. [ ] running the app from `Onion omega 2` - Ref: https://onion.io/omega2/
 
 ## Credits
