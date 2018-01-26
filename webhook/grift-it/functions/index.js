@@ -12,9 +12,9 @@ const appConfig = require('./config');
 // initialise firebase admin
 firebaseAdmin.initializeApp(functions.config().firebase);
 
-const _databaseRef = firebaseAdmin.database().ref(appConfig.griftItRequestDBCollection);
-const _databasePriorityRef = firebaseAdmin.database().ref(appConfig.griftItPriorityDBCollection);
-const _databaseCommandRef = firebaseAdmin.database().ref(appConfig.griftItCommandDBCollection);
+const _databaseRef = firebaseAdmin.database().ref(appConfig.db.griftItRequestDBCollection);
+const _databasePriorityRef = firebaseAdmin.database().ref(appConfig.db.griftItPriorityDBCollection);
+const _databaseCommandRef = firebaseAdmin.database().ref(appConfig.db.griftItCommandDBCollection);
 
 
 // _databaseRef.on('child_removed', () => {

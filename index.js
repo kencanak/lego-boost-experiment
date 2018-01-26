@@ -82,9 +82,9 @@ class LegoBoostExperiment {
     });
 
     this._db = firebaseAdmin.database();
-    this._requestDBRef = this._db.ref(appConfig.griftItRequestDBCollection);
-    this._requestCompleteDBRef = this._db.ref(appConfig.griftItRequestCompleteDBCollection);
-    this._grifterCommandDBRef = this._db.ref(appConfig.griftItCommandDBCollection);
+    this._requestDBRef = this._db.ref(appConfig.db.griftItRequestDBCollection);
+    this._requestCompleteDBRef = this._db.ref(appConfig.db.griftItRequestCompleteDBCollection);
+    this._grifterCommandDBRef = this._db.ref(appConfig.db.griftItCommandDBCollection);
   }
 
   _attachDBListener() {

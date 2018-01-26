@@ -1,8 +1,10 @@
 module.exports = {
-  griftItRequestDBCollection: 'grift-it-request',
-  griftItPriorityDBCollection: 'grift-it-priority',
-  griftItCommandDBCollection: 'grift-it-command',
-  griftItRequestCompleteDBCollection: 'grift-it-request-complete',
+  db: {
+    griftItRequestDBCollection: 'grift-it-request',
+    griftItPriorityDBCollection: 'grift-it-priority',
+    griftItCommandDBCollection: 'grift-it-command',
+    griftItRequestCompleteDBCollection: 'grift-it-request-complete'
+  },
   fireDBCommandField: {
     cancelCurrent: 'cancel_current'
   },
