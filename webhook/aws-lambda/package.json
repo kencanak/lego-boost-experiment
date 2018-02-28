@@ -1,0 +1,20 @@
+{
+  "name": "grift-it",
+  "version": "0.0.1",
+  "description": "grift-it aws lambda functions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "zip": "zip -r aws-lambda-webhook.zip *"
+  },
+  "author": "Kencana Kesuma",
+  "license": "MIT",
+  "dependencies": {
+    "actions-on-google": "^1.7.0",
+    "events": "^1.1.1",
+    "firebase-admin": "~4.2.1",
+    "firebase-functions": "^0.5",
+    "random-words": "^0.0.1"
+  },
+  "private": true
+}

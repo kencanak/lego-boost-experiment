@@ -1,0 +1,16 @@
+{
+  "name": "grift-it",
+  "version": "0.0.1",
+  "description": "grift-it alexa skills with Dialogflow",
+  "author": "Kencana Kesuma",
+  "main": "index.js",
+  "dependencies": {
+    "alexa-sdk": "^1.0.25",
+    "apiai": "^4.0.3",
+    "aws-sdk": "^2.188.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "zip": "zip -r alexa-skills.zip *"
+  }
+}
