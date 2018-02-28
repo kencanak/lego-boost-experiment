@@ -2,7 +2,7 @@
 > node.js interface to communicate with LEGO boost module
 
 ## Preview
-[![Alt text](https://img.youtube.com/vi/glZRpH6SsPM/0.jpg)](https://www.youtube.com/watch?v=glZRpH6SsPM)
+TO BE ADDED
 
 ## Pre-requisites
 ### Hardware
