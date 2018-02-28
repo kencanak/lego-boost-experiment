@@ -19,11 +19,11 @@
 3. `npm run start`
 
 ## Project idea
-1. build a step count simulator
-2. action should be triggered by VUI - using Google Assistant for now
-3. making use of firebase of real-time task list update
-4. add in push notification feature, to inform user whether or not task has been completed
-5. making use of distance sensor to detect if target object is in place
+1. [x] build a step count simulator
+2. [x] action should be triggered by VUI - create alexa skills
+3. [x] making use of firebase of real-time task list update
+4. [ ] add in push notification feature, to inform user whether or not task has been completed
+5. [ ] making use of distance sensor to detect if target object is in place
 
 ## Project structure
 1. node server for communicating with Lego hub and firebase (for grabbing list of task to be done)
