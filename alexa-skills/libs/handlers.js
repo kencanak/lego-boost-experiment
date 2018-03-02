@@ -4,6 +4,8 @@ const keys = require('../keys/alexa-dialogflow-keys');
 
 const ApiAi = ApiAiSdk(keys.apiAIDeveloperAccessToken);
 
+const ssmlContentRegex = /<speak>(.*?)<\/speak>/;
+
 const _setAlexaSessionId = (sessionId) => {
   if (sessionId.indexOf("amzn1.echo-api.session.") != -1) {
     alexaSessionId = sessionId.split('amzn1.echo-api.session.').pop();
@@ -24,6 +26,26 @@ const _isResponseIncompleted = (response) => {
   }
 
   return false;
+};
+
+const grabDialogFlowIntentResponse = (fulfillment) => {
+  // message content with ssml props has priority
+  // if there is no ssml object exists, take the plain response text as a fallback response
+  let msgContent = null;
+  if (fulfillment.messages) {
+    msgContent = fulfillment.messages.filter((message) => {
+      return message.ssml !== undefined;
+    });
+  }
+
+  if (!msgContent) {
+    msgContent = fulfillment.speech;
+  } else {
+    const sanitizedSSML = msgContent[0].ssml.match(ssmlContentRegex);
+    msgContent = sanitizedSSML.length > 1 ? sanitizedSSML[1] : msgContent[0].ssml;
+  }
+
+  return msgContent;
 };
 
 module.exports = {
@@ -59,7 +81,7 @@ module.exports = {
         sessionId: alexaSessionId
       })
       .on('response', function(response) {
-        const speech = response.result.fulfillment.speech;// ? response.result.fulfillment.speech : response.result.fulfillment.messages[0].displayText;
+        const speech = grabDialogFlowIntentResponse(response.result.fulfillment);
 
         if (_isResponseIncompleted(response)) {
           self.emit(':ask', speech, speech);
